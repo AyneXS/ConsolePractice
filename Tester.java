@@ -3,8 +3,12 @@
  */
 public class Tester {
     public static void main(String[] args){
-        TempConverter tc = new TempConverter();
+        /*TempConverter tc = new TempConverter();
         tc.init();
         tc.startConsole();
+        */
+        ArrayCopy ac = new ArrayCopy();
+        ac.init();
+        ac.startConsole();
     }
 }

@@ -2,15 +2,13 @@
  * Created by N-Aynex on 06.02.19.
  */
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public abstract class ConsoleGUI {
     private String intro;
-    private ArrayList<String> menu;
+    private ArrayList<String> menu = new ArrayList<String>();
     private String userInput;
-    private String result;
 
     public void setIntro(String intro){
         this.intro = intro;
@@ -18,6 +16,10 @@ public abstract class ConsoleGUI {
 
     public void setMenu(ArrayList<String> menu){
         this.menu = menu;
+    }
+
+    public ArrayList<String> getMenu(){
+        return menu;
     }
 
     public void setUserInput(String input){
@@ -28,11 +30,9 @@ public abstract class ConsoleGUI {
         return userInput;
     }
 
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public abstract void init();
+    public void init(){
+        menu.add("Exit");
+    };
 
     public void startConsole(){
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -40,32 +40,32 @@ public abstract class ConsoleGUI {
 
         while (true) {
             for (String moption: menu){
-                System.out.println((menu.indexOf(moption) + 1) + " " + moption);
+                System.out.println(menu.indexOf(moption) + " " + moption);
             }
             System.out.println("Enter the number of the wished option: ");
-            int choice = 0;
+            int choice = -1;
 
             do {
             try {
                 do {
                     choice = Integer.parseInt(in.readLine());
-                    if (!(choice > 0 && choice <= menu.size())){
+                    if (!(choice >= 0 && choice <= menu.size()-1)){
                         System.out.println("Please enter a valid menu option:");
                     }
-                } while (!(choice > 0 && choice <= menu.size()));
+                } while (!(choice >= 0 && choice <= menu.size()-1));
             } catch (Exception e){
                 System.out.println("Please enter a valid number:");
             }
-            } while (!(choice > 0 && choice <= menu.size()));
+            } while (!(choice >= 0 && choice <= menu.size()-1));
 
-            System.out.println(menu.get(choice-1));
+            System.out.println(menu.get(choice));
 
-            if (choice == menu.indexOf("Exit")+1) exit();
+            if (choice == menu.indexOf("Exit")) exit();
 
             try {
                 setUserInput(in.readLine());
                 doAction(choice);
-                System.out.println(result+"\n");
+                printResult();
             } catch (Exception e) {
                 System.out.println("Not a valid input parameter.\n");
             }
@@ -73,6 +73,7 @@ public abstract class ConsoleGUI {
         }
     }
 
+    public abstract void printResult();
     public abstract void doAction(int choice);
 
     public void exit(){
