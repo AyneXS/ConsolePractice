@@ -1,53 +1,88 @@
 /**
  * Created by N-Aynex on 06.02.19.
  */
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public final class ArrayCopy extends ConsoleGUI {
-    private String[] result;
-    private String stringArray;
+public class ArrayCopy extends ConsoleGUI {
+    private String[][] result;
+    private String[] userInput;
+    private int copies;
 
-    public void init(){
+    public void setUserInput(String[] input){
+        this.userInput = input;
+    }
+
+    public String[] getUserInput(){
+        return userInput;
+    }
+
+    public int getCopies() {
+        return copies;
+    }
+
+    public void setCopies(int copies) {
+        this.copies = copies;
+    }
+
+    @Override
+    protected void init(){
         super.init();
         setIntro("This is a string array copier.\n" +
-                "Enter an option from the menu below and then enter the array.");
+            "Enter an option from the menu below and then enter the array and the number of copies in the next line.");
         ArrayList<String> menu = getMenu();
         menu.add("Enter an array and the number of copies");
         setMenu(menu);
     }
 
-    public void doAction(int choice){
-        String initialArray = getUserInput();
-        int copies = getNumberOfCopies(initialArray);
-        String[] copyArray = new String[copies];
-        //cutting the number from the end
-        stringArray = initialArray.substring(0, initialArray.length()-String.valueOf(copies).length());
+    @Override
+    protected void startInput(BufferedReader in) {
+    String input = "";
+    int copies = 0;
+    boolean exitLoop = false;
+        do {
+            try {
+                input = in.readLine();
+                copies = Integer.parseInt(in.readLine());
+                exitLoop = true;
+            } catch (IOException e) {
+                System.out.println("Not a valid input parameter. Try again.");
+            }
+        } while (exitLoop==false);
+        setUserInput(input.split("\\s+"));
+        setCopies(copies);
+    }
+
+    @Override
+    protected void doAction(int choice){
+        String[] initialArray = getUserInput();
+        int copies = getCopies();
+        String[][] copyArray = new String[copies][initialArray.length];
 
         for (int i=0; i<copies; i++){
-            copyArray[i] = stringArray;
+            copyArray[i] = Arrays.copyOf(initialArray, initialArray.length);
         }
         result = copyArray;
     }
 
-    private int getNumberOfCopies(String ua) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = ua.length()-1; i>=0; i--) {
-            char c = ua.charAt(i);
-            if (Character.isDigit(c)) {
-                sb.insert(0, c);
-            } else {
-                break;
-            }
+    @Override
+    protected void printResult(){
+        String[] ui = getUserInput();
+        for (int i=0; i<ui.length; i++){
+            System.out.print(ui[i]+ " ");
         }
-        return Integer.parseInt(sb.toString());
-    }
-
-    public void printResult(){
-        System.out.println(stringArray);
+        System.out.println();
         for (int i=0; i<result.length; i++){
-            System.out.println(i+1 + " " + result[i]);
+            System.out.print(i+1 + " ");
+            for (int j=0; j<result[j].length; j++){
+                System.out.print(result[i][j] + " ");
+            }
+            System.out.println();
         }
         System.out.println();
 
     }
+
 }

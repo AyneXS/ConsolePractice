@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public abstract class ConsoleGUI {
     private String intro;
     private ArrayList<String> menu = new ArrayList<String>();
-    private String userInput;
 
     public void setIntro(String intro){
         this.intro = intro;
@@ -22,19 +21,11 @@ public abstract class ConsoleGUI {
         return menu;
     }
 
-    public void setUserInput(String input){
-        this.userInput = input;
-    }
-
-    public String getUserInput(){
-        return userInput;
-    }
-
-    public void init(){
+    protected void init(){
         menu.add("Exit");
     };
 
-    public void startConsole(){
+    protected void startConsole(){
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println(intro);
 
@@ -62,19 +53,15 @@ public abstract class ConsoleGUI {
 
             if (choice == menu.indexOf("Exit")) exit();
 
-            try {
-                setUserInput(in.readLine());
-                doAction(choice);
-                printResult();
-            } catch (Exception e) {
-                System.out.println("Not a valid input parameter.\n");
-            }
-
+            startInput(in);
+            doAction(choice);
+            printResult();
         }
     }
 
-    public abstract void printResult();
-    public abstract void doAction(int choice);
+    protected abstract void startInput(BufferedReader in);
+    protected abstract void printResult();
+    protected abstract void doAction(int choice);
 
     public void exit(){
         System.exit(0);
