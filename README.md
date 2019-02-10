@@ -1,3 +1,2 @@
 # ConsolePractice
-Java console apps
-Small programs just for fun.
+Java console apps - small programs just for fun.
