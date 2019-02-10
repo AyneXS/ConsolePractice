@@ -16,7 +16,7 @@ public class Tester {
         */
 
         Armstrong a = new Armstrong();
-        a.init();
+        a.init(18);
         a.startConsole();
 
 

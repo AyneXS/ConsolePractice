@@ -7,9 +7,10 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class Armstrong extends ConsoleGUI {
-    private int[][] powers = new int[9][9];
-    private long duration;
-    private ArrayList<Integer> armstrongs;
+    private int power;
+    private long[][] powers;
+    private long duration, usedMemory;
+    private ArrayList<Long> armstrongs;
 
     protected void setDuration(long duration){
         this.duration = duration;
@@ -17,15 +18,22 @@ public class Armstrong extends ConsoleGUI {
     protected long getDuration(){
         return duration;
     }
+    protected void setUsedMemory(long memory){
+        usedMemory = memory;
+    }
+    protected long getUsedMemory(){
+        return usedMemory;
+    }
 
-    @Override
-    protected void init(){
+    //@Override
+    protected void init(int power){
         super.init();
         setIntro("This is a program for finding Armstrong numbers.\n" +
                 "Enter an option from the menu below.");
         ArrayList<String> menu = getMenu();
         menu.add("Show Armstrong numbers");
         setMenu(menu);
+        this.power = power;
     }
 
     @Override
@@ -35,28 +43,32 @@ public class Armstrong extends ConsoleGUI {
     @Override
     protected void doAction(int choice) {
         long startTime, endTime;
+        long startMemory, endMemory;
         startTime = System.currentTimeMillis();
-        armstrongs = new ArrayList<Integer>();
-        initPowers();
+        startMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        armstrongs = new ArrayList<Long>();
+        initPowers(power);
         //assembling possible numbers
-        for (int i=1; i<=9; i++){           //powers loop
+        for (int i=1; i<=power; i++){           //powers loop
             char[] num = new char[i];
             findNumbers(num, 0, 0, i);
         }
+        endMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         endTime = System.currentTimeMillis();
         setDuration(endTime-startTime);
+        setUsedMemory((endMemory-startMemory)/1024);
     }
 
-    private void findNumbers(char[] number, int sum, int pos, int currPow) { //number, power's sum, start position, digit power
-        int init_sum = sum;
+    private void findNumbers(char[] number, long sum, int pos, int currPow) { //number, power's sum, start position, digit power
+        long init_sum = sum;
         int pow = number.length;
-        int temp_sum;
+        long temp_sum;
         for (int i=pos; i<=9; i++){
             temp_sum = init_sum;
             number[currPow-1] = Character.forDigit(i, 10);
-            if (i==0) {
-                temp_sum += 0;  //0 in any power is 0
-            } else temp_sum += powers[pow-1][i-1];
+            if (i!=0) { //0 in any power is 0
+                temp_sum += powers[pow-1][i-1];
+            }
             if (currPow==1){
                 if (allDigitsInSum(number, temp_sum)){
                     armstrongs.add(temp_sum);
@@ -68,28 +80,19 @@ public class Armstrong extends ConsoleGUI {
 
     }
 
-    private boolean allDigitsInSum(char[] number, int sum) {
+    private boolean allDigitsInSum(char[] number, long sum) {
         char[] sumDigits = String.valueOf(sum).toCharArray();
         char[] temp_num = Arrays.copyOf(number, number.length);
-        boolean wellDone = false;
-        if (sumDigits.length!=temp_num.length) return wellDone;
         Arrays.sort(sumDigits);
         Arrays.sort(temp_num);
-        for (int i=0; i<temp_num.length; i++){
-            if (temp_num[i]==sumDigits[i]){
-                wellDone = true;
-            } else {
-                wellDone=false;
-                break;
-            }
-        }
-        return wellDone;
+        return Arrays.equals(sumDigits, temp_num);
     }
 
-    private void initPowers() {
-        for (int i=0; i<9; i++){
-            for (int j=0; j<9; j++){
-                powers[i][j] = (int)(Math.pow(j+1, i+1));
+    private void initPowers(int pow) {
+        powers = new long[pow][pow];
+        for (int i=0; i<pow; i++){
+            for (int j=0; j<pow; j++){
+                powers[i][j] = (long)(Math.pow(j+1, i+1));
             }
         }
     }
@@ -98,6 +101,7 @@ public class Armstrong extends ConsoleGUI {
     protected void printResult() {
         Collections.sort(armstrongs);
         System.out.println(armstrongs);
-        System.out.printf("Running time: %d ms\n\n", getDuration());
+        System.out.printf("Running time: %d ms\n", getDuration());
+        System.out.printf("Used memory: %d kbytes\n\n", getUsedMemory());
     }
 }
